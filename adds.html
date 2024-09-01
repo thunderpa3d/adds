@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التبديل التلقائي بين الروابط</title>
+    <style>
+        body {
+            display: grid;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #84dee18e;
+            font-family: Arial, sans-serif;
+            direction: rtl;
+        }
+
+        .card {
+            width: 80%;
+            max-width: 600px;
+            background-color: #aaf3e5;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .timer {
+            font-size: 24px;
+            margin: 20px 0;
+            color: #05c415;
+        }
+
+        .link-info {
+            font-size: 20px;
+            margin: 20px 0;
+            color: #1ba9dd;
+            text-decoration: none;
+        }
+
+        #qrcode {
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="timer" id="timer">10</div>
+    <div id="currentLink" class="link-info">فتح الرابط في علامة تبويب جديدة...</div>
+    <div id="qrcode"></div>
+    <div id="currentLink2" class="link-info2">بار كود الروابط المباشرة لسهولة النشر</div>
+    <div id="currentLink3" class="link-info3">أربح المال الحقيقي من الروابط المباشرة</div>
+</div> 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+    let countdown = 10;
+    const timerElement = document.getElementById('timer');
+    const currentLinkElement = document.getElementById('currentLink');
+    const links = [
+        "https://nothingelbowsigns.com/rfdy65n1iy?key=0d6037c84bfd2fe3dc092ff2a4ae1d31", 
+        "https://nothingelbowsigns.com/fscefurv?key=9eaca2f83152d840201cfda537bba0a8"
+    ];
+    let currentLinkIndex = 0;
+
+    function openNewTab() {
+        const link = links[currentLinkIndex];
+        window.open(link, '_blank'); // فتح الرابط في علامة تبويب جديدة
+        generateQRCode("https://your-specific-url.com"); // تحديث الباركود للرابط المخصص
+    }
+
+    function generateQRCode(link) {
+        document.getElementById("qrcode").innerHTML = ''; // مسح الباركود القديم
+        const qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: link,
+            width: 128,
+            height: 128,
+        });
+    }
+
+    const countdownInterval = setInterval(() => {
+        countdown--;
+        timerElement.textContent = countdown;
+
+        if (countdown <= 0) {
+            countdown = 10;
+            currentLinkIndex = (currentLinkIndex + 1) % links.length;
+            openNewTab();
+        }
+    }, 1000);
+
+    // إنشاء الباركود للرابط المخصص عند تحميل الصفحة
+    generateQRCode("https://your-specific-url.com");
+</script>
+
+</body>
+<div id="currentLink4" class="link-info4">لسنا مسؤلين عن هذه الروابط يرجى عدم تحميل أي شيء من هذه الروابط.
+</div>
+</html>
