@@ -7,7 +7,10 @@
     <meta name="theme-color" content="#0a2e0a">
     <title>نظام الاتصالات العسكرية | القيادة العامة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
+    
+        /* أنماط CSS تبقى كما هي */
+        /* ... */
+     <style>
         :root {
             --primary: #0a2e0a;
             --secondary: #1e3c1e;
@@ -650,14 +653,12 @@
     </style>
 </head>
 <body>
-    <!-- طبقة التحميل -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
         <div class="loading-text">جاري تحميل النظام العسكري...</div>
     </div>
 
     <div class="app-container">
-        <!-- الشريط العلوي -->
         <header class="header">
             <div class="logo">
                 <i class="fas fa-radio"></i>
@@ -668,7 +669,6 @@
             </button>
         </header>
 
-        <!-- القائمة الجانبية -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h3 class="sidebar-title">القائمة الرئيسية</h3>
@@ -691,7 +691,6 @@
             </div>
         </aside>
 
-        <!-- المحتوى الرئيسي -->
         <main class="main-content">
             <div class="content-card">
                 <div class="card-header">
@@ -715,7 +714,6 @@
                     </div>
                 </div>
 
-                <!-- نموذج إضافة جهة اتصال -->
                 <form class="contact-form" id="contactForm">
                     <div class="form-group">
                         <label class="form-label">الاسم الكامل</label>
@@ -731,12 +729,12 @@
                         <label class="form-label">الرتبة</label>
                         <select class="form-control" id="contactRank" required>
                             <option value="soldier">جندي</option>
-                            <option value="corporal"> نائب مسؤل سرية</option>
-                            <option value="sergeant"> مسؤل سرية </option>
-                            <option value="lieutenant"> ميداني</option>
+                            <option value="corporal">نائب مسؤل سرية</option>
+                            <option value="sergeant">مسؤل سرية</option>
+                            <option value="lieutenant">ميداني</option>
                             <option value="captain">ادارة عسكرية</option>
                             <option value="major">مسؤل عمليات</option>
-                            <option value="colonel"> قائداركان</option>
+                            <option value="colonel"> قائد اركان</option>
                             <option value="general"> قائد كتيبة</option>
                         </select>
                     </div>
@@ -769,17 +767,14 @@
                     </div>
                 </form>
 
-                <!-- شريط البحث -->
                 <input type="search" class="search-box" id="searchInput" placeholder="ابحث عن جهة اتصال...">
 
-                <!-- قائمة جهات الاتصال -->
                 <ul class="contacts-list" id="contactsList">
                     <!-- سيتم ملؤها بواسطة JavaScript -->
                 </ul>
             </div>
         </main>
 
-        <!-- التذييل -->
         <footer class="footer">
             <p>نظام الاتصالات العسكرية © تطوير TF3RAAD@</p>
         </footer>
@@ -788,13 +783,13 @@
     <script>
         // تهيئة النظام عند التحميل
         document.addEventListener('DOMContentLoaded', function() {
-            // إخفاء شاشة التحميل بعد 2 ثانية
+            // إخفاء شاشة التحميل بعد 1.5 ثانية
             setTimeout(() => {
                 document.getElementById('loadingOverlay').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('loadingOverlay').style.display = 'none';
                 }, 500);
-            }, 2000);
+            }, 1500);
             
             // تحديث الوقت الحالي
             updateCurrentTime();
@@ -873,7 +868,7 @@
                 const notes = document.getElementById('contactNotes').value.trim();
                 
                 if (name && number && rank) {
-                    addNewContact({
+                    const newContact = {
                         name,
                         number,
                         rank,
@@ -881,7 +876,13 @@
                         whatsapp,
                         telegram,
                         notes
-                    });
+                    };
+                    
+                    // إضافة جهة الاتصال إلى الواجهة
+                    addContactToUI(newContact);
+                    
+                    // حفظ جهة الاتصال في التخزين المحلي
+                    saveContactToStorage(newContact);
                     
                     form.reset();
                 } else {
@@ -890,13 +891,15 @@
             });
         }
         
-        // إضافة جهة اتصال جديدة
-        function addNewContact(contact) {
+        // إضافة جهة اتصال إلى الواجهة
+        function addContactToUI(contact) {
             const contactsList = document.getElementById('contactsList');
             
             // إنشاء عنصر HTML لجهة الاتصال الجديدة
             const contactItem = document.createElement('li');
             contactItem.className = 'contact-item';
+            contactItem.dataset.id = Date.now(); // معرف فريد لكل جهة اتصال
+            
             contactItem.innerHTML = `
                 <div class="contact-header">
                     <h3 class="contact-name">
@@ -944,15 +947,15 @@
                 </div>
                 
                 <div class="contact-actions">
-                    <button class="btn btn-info btn-sm" onclick="editContact(this)">
+                    <button class="btn btn-info btn-sm edit-btn">
                         <i class="fas fa-edit"></i>
                         تعديل
                     </button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteContact(this)">
+                    <button class="btn btn-danger btn-sm delete-btn">
                         <i class="fas fa-trash"></i>
                         حذف
                     </button>
-                    <button class="btn btn-success btn-sm" onclick="callContact(this)">
+                    <button class="btn btn-success btn-sm call-btn">
                         <i class="fas fa-phone"></i>
                         اتصال
                     </button>
@@ -967,6 +970,19 @@
             // إضافة جهة الاتصال إلى القائمة
             contactsList.prepend(contactItem);
             
+            // إضافة معالجات الأحداث للأزرار
+            contactItem.querySelector('.edit-btn').addEventListener('click', function() {
+                editContact(this.closest('.contact-item'));
+            });
+            
+            contactItem.querySelector('.delete-btn').addEventListener('click', function() {
+                deleteContact(this.closest('.contact-item'));
+            });
+            
+            contactItem.querySelector('.call-btn').addEventListener('click', function() {
+                callContact(this.closest('.contact-item'));
+            });
+            
             // تحديث عدد جهات الاتصال
             updateContactsCount();
             
@@ -976,11 +992,139 @@
                 noResults.remove();
             }
             
-            // حفظ جهات الاتصال في التخزين المحلي
-            saveContactsToStorage();
-            
             // عرض رسالة نجاح
             alert(`تم إضافة ${contact.name} إلى سجل الاتصالات بنجاح`);
+        }
+        
+        // حفظ جهة اتصال في التخزين المحلي
+        function saveContactToStorage(contact) {
+            // الحصول على جهات الاتصال الحالية من التخزين
+            let savedContacts = JSON.parse(localStorage.getItem('militaryContacts')) || [];
+            
+            // إضافة الجهة الجديدة
+            savedContacts.push({
+                ...contact,
+                id: Date.now() // إضافة معرف فريد
+            });
+            
+            // حفظ القائمة المحدثة
+            localStorage.setItem('militaryContacts', JSON.stringify(savedContacts));
+        }
+        
+        // تحميل جهات الاتصال المحفوظة
+        function loadSavedContacts() {
+            const savedContacts = JSON.parse(localStorage.getItem('militaryContacts'));
+            const contactsList = document.getElementById('contactsList');
+            
+            if (!savedContacts || savedContacts.length === 0) {
+                // إضافة رسالة عدم وجود اتصالات
+                contactsList.innerHTML = '<li class="no-results">لا توجد جهات اتصال مسجلة</li>';
+                return;
+            }
+            
+            // عرض جميع جهات الاتصال المحفوظة
+            savedContacts.forEach(contact => {
+                addContactToUI(contact);
+            });
+        }
+        
+        // تعديل جهة اتصال
+        function editContact(contactItem) {
+            const name = contactItem.querySelector('.contact-name').textContent.trim();
+            const number = contactItem.querySelector('.contact-number').textContent.trim();
+            
+            const newName = prompt('عدل اسم الجندي:', name);
+            if (newName !== null) {
+                contactItem.querySelector('.contact-name').textContent = newName;
+                
+                const newNumber = prompt('عدل رقم الاتصال:', number);
+                if (newNumber !== null) {
+                    contactItem.querySelector('.contact-number').textContent = newNumber;
+                    alert('تم تحديث بيانات الجندي بنجاح');
+                    
+                    // تحديث البيانات في التخزين المحلي
+                    updateContactInStorage(contactItem.dataset.id, newName, newNumber);
+                }
+            }
+        }
+        
+        // تحديث جهة اتصال في التخزين
+        function updateContactInStorage(id, name, number) {
+            let savedContacts = JSON.parse(localStorage.getItem('militaryContacts')) || [];
+            
+            // البحث عن الجهة وتحديثها
+            savedContacts = savedContacts.map(contact => {
+                if (contact.id == id) {
+                    return {
+                        ...contact,
+                        name,
+                        number
+                    };
+                }
+                return contact;
+            });
+            
+            // حفظ القائمة المحدثة
+            localStorage.setItem('militaryContacts', JSON.stringify(savedContacts));
+        }
+        
+        // حذف جهة اتصال
+        function deleteContact(contactItem) {
+            if (confirm('هل أنت متأكد من حذف هذه الجهة من النظام؟')) {
+                const contactId = contactItem.dataset.id;
+                
+                contactItem.style.animation = 'fadeOut 0.3s forwards';
+                
+                setTimeout(() => {
+                    contactItem.remove();
+                    updateContactsCount();
+                    
+                    // حذف الجهة من التخزين المحلي
+                    deleteContactFromStorage(contactId);
+                    
+                    // عرض رسالة عدم وجود نتائج إذا لم يتبقى أي جهات
+                    const contacts = document.querySelectorAll('#contactsList .contact-item');
+                    if (contacts.length === 0) {
+                        const noResultsElement = document.createElement('li');
+                        noResultsElement.className = 'no-results';
+                        noResultsElement.textContent = 'لا توجد جهات اتصال مسجلة';
+                        document.getElementById('contactsList').appendChild(noResultsElement);
+                    }
+                }, 300);
+            }
+        }
+        
+        // حذف جهة اتصال من التخزين
+        function deleteContactFromStorage(id) {
+            let savedContacts = JSON.parse(localStorage.getItem('militaryContacts')) || [];
+            
+            // تصفية الجهة المحذوفة
+            savedContacts = savedContacts.filter(contact => contact.id != id);
+            
+            // حفظ القائمة المحدثة
+            localStorage.setItem('militaryContacts', JSON.stringify(savedContacts));
+        }
+        
+        // الاتصال بجهة اتصال
+        function callContact(contactItem) {
+            const number = contactItem.querySelector('.contact-number').textContent.trim();
+            
+            if (number) {
+                // تأثير الاهتزاز عند الاتصال
+                contactItem.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    contactItem.style.animation = '';
+                }, 500);
+                
+                // تسجيل وقت الاتصال
+                const now = new Date();
+                const callTime = now.toLocaleTimeString('ar-EG');
+                
+                // إشعار بنجاح الاتصال
+                alert(`تم بدء الاتصال بالرقم: ${number}\nالوقت: ${callTime}`);
+            } else {
+                alert('الرجاء إدخال رقم اتصال صحيح');
+            }
         }
         
         // تهيئة وظيفة البحث
@@ -1023,78 +1167,6 @@
             });
         }
         
-        // تعديل جهة اتصال
-        function editContact(button) {
-            const contactItem = button.closest('.contact-item');
-            const name = contactItem.querySelector('.contact-name').textContent.trim();
-            const number = contactItem.querySelector('.contact-number').textContent.trim();
-            
-            const newName = prompt('عدل اسم الجندي:', name);
-            if (newName !== null) {
-                contactItem.querySelector('.contact-name').textContent = newName;
-                
-                const newNumber = prompt('عدل رقم الاتصال:', number);
-                if (newNumber !== null) {
-                    contactItem.querySelector('.contact-number').textContent = newNumber;
-                    alert('تم تحديث بيانات الجندي بنجاح');
-                    
-                    // حفظ جهات الاتصال في التخزين المحلي بعد التعديل
-                    saveContactsToStorage();
-                }
-            }
-        }
-        
-        // حذف جهة اتصال
-        function deleteContact(button) {
-            if (confirm('هل أنت متأكد من حذف هذه الجهة من النظام؟')) {
-                const contactItem = button.closest('.contact-item');
-                contactItem.style.animation = 'fadeOut 0.3s forwards';
-                
-                setTimeout(() => {
-                    contactItem.remove();
-                    updateContactsCount();
-                    
-                    // حفظ جهات الاتصال في التخزين المحلي بعد الحذف
-                    saveContactsToStorage();
-                    
-                    // عرض رسالة عدم وجود نتائج إذا لم يتبقى أي جهات
-                    const contacts = document.querySelectorAll('#contactsList .contact-item');
-                    if (contacts.length === 0) {
-                        const noResultsElement = document.createElement('li');
-                        noResultsElement.className = 'no-results';
-                        noResultsElement.textContent = 'لا توجد جهات اتصال مسجلة';
-                        document.getElementById('contactsList').appendChild(noResultsElement);
-                    }
-                }, 300);
-            }
-        }
-        
-        // الاتصال بجهة اتصال
-        function callContact(button) {
-            const contactItem = button.closest('.contact-item');
-            const number = contactItem.querySelector('.contact-number').textContent.trim();
-            
-            if (number) {
-                // تأثير الاهتزاز عند الاتصال
-                contactItem.style.animation = 'shake 0.5s';
-                setTimeout(() => {
-                    contactItem.style.animation = '';
-                }, 500);
-                
-                // تسجيل وقت الاتصال
-                const now = new Date();
-                const callTime = now.toLocaleTimeString('ar-EG');
-                
-                // في التطبيق الفعلي، هذا سيفتح تطبيق الهاتف
-                console.log(`الاتصال بالرقم: ${number}`);
-                
-                // إشعار بنجاح الاتصال
-                alert(`تم بدء الاتصال بالرقم: ${number}\nالوقت: ${callTime}`);
-            } else {
-                alert('الرجاء إدخال رقم اتصال صحيح');
-            }
-        }
-        
         // وظائف مساعدة
         function getRankBadge(rank) {
             const badges = {
@@ -1119,7 +1191,7 @@
                 'captain': 'ادارة عسكرية',
                 'major': 'مسؤل عمليات',
                 'colonel': 'قائد اركان',
-                'general': 'قائد كتينة'
+                'general': 'قائد كتيبة'
             };
             return names[rank] || 'غير محدد';
         }
@@ -1135,100 +1207,6 @@
             }
             
             return phone;
-        }
-        
-        // حفظ جهات الاتصال في التخزين المحلي
-        function saveContactsToStorage() {
-            const contacts = [];
-            const contactItems = document.querySelectorAll('#contactsList .contact-item');
-            
-            contactItems.forEach(item => {
-                const contact = {
-                    name: item.querySelector('.contact-name').textContent.trim(),
-                    number: item.querySelector('.contact-number').textContent.trim(),
-                    rank: getRankByBadge(item.querySelector('.rank-badge').textContent),
-                    unit: '',
-                    whatsapp: '',
-                    telegram: '',
-                    notes: ''
-                };
-                
-                // استخراج الوحدة
-                const unitRow = item.querySelector('.detail-row:has(.detail-label:contains("السوية"))');
-                if (unitRow) {
-                    contact.unit = unitRow.querySelector('.detail-value').textContent.trim();
-                }
-                
-                // استخراج الملاحظات
-                const notesRow = item.querySelector('.detail-row:has(.detail-label:contains("ملاحظات"))');
-                if (notesRow) {
-                    contact.notes = notesRow.querySelector('.detail-value').textContent.trim();
-                }
-                
-                // استخراج واتساب
-                const whatsappLink = item.querySelector('.whatsapp-link');
-                if (whatsappLink) {
-                    contact.whatsapp = whatsappLink.href.split('/').pop();
-                }
-                
-                // استخراج تيليجرام
-                const telegramLink = item.querySelector('.telegram-link');
-                if (telegramLink) {
-                    contact.telegram = telegramLink.href.split('/').pop();
-                }
-                
-                contacts.push(contact);
-            });
-            
-            // حفظ البيانات في localStorage
-            localStorage.setItem('militaryContacts', JSON.stringify(contacts));
-        }
-        
-        // تحميل جهات الاتصال المحفوظة
-        function loadSavedContacts() {
-            const savedContacts = localStorage.getItem('militaryContacts');
-            if (savedContacts) {
-                const contacts = JSON.parse(savedContacts);
-                contacts.forEach(contact => {
-                    addNewContact(contact);
-                });
-            } else {
-                // إضافة جهات اتصال افتراضية إذا لم توجد بيانات محفوظة
-                addNewContact({
-                    name: "أبو رعد الحموي",
-                    number: "0934096914",
-                    rank: "corporal",
-                    unit: "كتيبة القنص",
-                    whatsapp: "+963934096914",
-                    telegram: "@TF3RAAD",
-                    notes: "هواية برمجة وتطوير المواقع والتطبيقات"
-                });
-                
-                addNewContact({
-                    name: "زبير التركي",
-                    number: "0906394825",
-                    rank: "colonel",
-                    unit: "كتيبة القنص",
-                    whatsapp: "+352681518178",
-                    telegram: "@WOLFTAC1",
-                    notes: "قائد عسكري"
-                });
-            }
-        }
-        
-        // الحصول على الرتبة بناءً على الشارة
-        function getRankByBadge(badge) {
-            const ranks = {
-                'ج': 'soldier',
-                'ع': 'corporal',
-                'ر': 'sergeant',
-                'م': 'lieutenant',
-                'ن': 'captain',
-                'ر': 'major',
-                'ع': 'colonel',
-                'ل': 'general'
-            };
-            return ranks[badge] || 'soldier';
         }
     </script>
 </body>
